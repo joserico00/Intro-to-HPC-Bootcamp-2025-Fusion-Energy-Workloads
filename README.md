@@ -17,7 +17,6 @@ The module lesson text, exercise prompts, starter code and synthetic datasets ar
 | [module_2_top500_analysis](module_2_top500_analysis.ipynb) | TOP500 (June 2025) analysis | Robust column detection, numeric coercion, performance per kW, accelerator fraction, country and vendor aggregation | pandas, matplotlib, seaborn |
 | [module_5_fusion_workload_energy_analysis](module_5_fusion_workload_energy_analysis.ipynb) | Fusion-energy workloads: performance and energy trade-offs | Synthetic job table, pivot tables, annotated and row-normalized heatmaps, planning worksheets | pandas, seaborn, matplotlib, numpy |
 | [**fusion_project_metrics**](fusion_project_metrics.ipynb) | Energy, science-per-kWh and cost metrics for fusion and non-fusion project tables | `to_numeric`, derived energy/cost columns, key normalization, de-duplication, outer merge | pandas |
-| [fusion_project_metrics_draft](fusion_project_metrics_draft.ipynb) | Earlier version of the metrics notebook | same as above | pandas |
 | [**fusion_job_scheduler**](fusion_job_scheduler.ipynb) | Greedy fusion-job scheduler under a 4.8 MW cap | Priority score, cycle-based packing, time-zone-aware timeline, Gantt and step charts, CSV export | pandas, numpy, matplotlib |
 
 ---
@@ -90,8 +89,8 @@ The optional written exercises are not answered in this copy.
 - **Vendors by mean Rmax** (systems with power data), mean Rmax per kW in parentheses: Intel (26.2), Nebius AI (36.7), IBM / NVIDIA / Mellanox (12.7), NRCPC (6.05), HPE (27.7), NUDT (3.32), Fujitsu (17.9), ASUSTeK (43.0), EVIDEN (19.3), Nvidia (28.6).
 
 ### Notes
-- The notebook cells are slightly out of order. The accelerator-fraction code (cell 8) comes before the Exercise 3 description. The Exercise 4 description was pasted into a **code** cell (cell 15, not executed; it would raise a `SyntaxError` if run). The Exercise 5 description appears twice.
-- Cell 14 was run in a separate kernel session (lower execution count) and re-imports everything it needs.
+- The notebook cells are slightly out of order: the accelerator-fraction code comes before the Exercise 3 description.
+- The standalone top-10 cell was run in a separate kernel session (lower execution count) and re-imports everything it needs.
 - The discussion prompts and the Green500 extension are not answered in this copy.
 
 ---
@@ -131,21 +130,17 @@ These notebooks use the Module 5 Track B setting: a **12 MW** facility with **40
   - `Science_per_$`
   - For architecture tables, the node count comes from `Nodes` or `Average Nodes`.
 - **Merges** each performance/architecture pair with an outer join on lowercase `Workload` + `Project_Name` keys, after de-duplicating on those keys. Saved shapes: **fusion 476 × 36**, **non-fusion 173 × 36**.
-- The last cells are empty.
-
-### fusion_project_metrics_draft.ipynb
-An earlier, **near-identical** version of *fusion_project_metrics*. The only difference is that it lacks the final `fusion_merged.head()` display cell.
 
 ### fusion_job_scheduler.ipynb
-1. Loads `fusion_workload_projects_architecture.csv`, derives the same power, energy, science and cost columns, and classifies each row as CPU, GPU or HYBRID from `Node_Type`/`Platform` text. Saved: **153 of 250 rows kept**, all eligible.
+1. Loads `data/fusion_workload_projects_architecture.csv`, derives the same power, energy, science and cost columns, and classifies each row as CPU, GPU or HYBRID from `Node_Type`/`Platform` text. Saved: **153 of 250 rows kept**, all eligible.
 2. **Priority** = 0.6 × (share of total work units) + 0.4 × (`Science_per_kWh` ÷ its maximum).
 3. **Greedy cycle scheduler:**
    - In each cycle, walk the unscheduled jobs by priority (then size) and place every job that still fits under a global **4.8 MW** cap.
    - The cycle lasts as long as its longest job.
    - Repeat until all jobs are placed.
 4. Gives the cycles calendar times starting 2025-08-15 09:00 America/Chicago. Saved plan: **start 2025-08-15 09:00, end 2025-08-17 05:07 (UTC−5)**.
-5. Writes `fusion_arch_with_schedule_4p8MW_simultaneous.csv`, `fusion_schedule_cycles_4p8MW_simultaneous.csv` and `fusion_cycle_summary_4p8MW_simultaneous.csv`. These outputs are generated when you run it and aren't included.
-6. Plots a timeline by bucket (hatched horizontal bars) and a step chart of MW in use against the 4.8 MW cap, saved as `my_plot.png`.
+5. Writes `fusion_arch_with_schedule_4p8MW_simultaneous.csv`, `fusion_schedule_cycles_4p8MW_simultaneous.csv` and `fusion_cycle_summary_4p8MW_simultaneous.csv` into `outputs/`. These are generated when you run it and aren't included.
+6. Plots a timeline by bucket (hatched horizontal bars) and a step chart of MW in use against the 4.8 MW cap, saved as `outputs/fusion_power_usage_vs_cap.png`.
 
 ---
 
@@ -160,12 +155,12 @@ An earlier, **near-identical** version of *fusion_project_metrics*. The only dif
 | `NERSCProject_nonfusion_hpc_projects.csv`, `NERSCProject_nonfusion_hpc_projects_architecture.csv` | The same views for non-fusion HPC projects |
 | `NERSCProject_hpc_architecture_type_analysis.csv`, `NERSCProject_hpc_programming_language_usage.csv` | Summary tables of architecture types and programming languages |
 
-`fusion_job_scheduler.ipynb` reads `fusion_workload_projects_architecture.csv` from its own folder. Copy that file next to the notebook, or change the path to `data/fusion_workload_projects_architecture.csv`. Module 2 needs `data/TOP500_202506.csv`, which isn't included.
+Module 2 needs `data/TOP500_202506.csv`, which isn't included.
 
 ## Requirements
 
 ```bash
-pip install pandas numpy matplotlib seaborn jupyter
+pip install -r requirements.txt
 ```
 
 The notebooks were saved with a Python 3.11 kernel. They need no GPU or cluster resources, and run on a laptop or a NERSC JupyterHub session.

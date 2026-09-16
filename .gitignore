@@ -1,3 +1,6 @@
 .DS_Store
 .ipynb_checkpoints/
 __pycache__/
+
+# tables and figures written by fusion_job_scheduler.ipynb
+outputs/
